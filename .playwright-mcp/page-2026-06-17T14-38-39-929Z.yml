@@ -1,0 +1,57 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - img "Vue logo" [ref=e4]
+      - navigation [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: /about
+        - link "Area riservata" [ref=e9] [cursor=pointer]:
+          - /url: /admin
+        - link "Logout" [active] [ref=e65] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e11]:
+      - heading "Eventi" [level=1] [ref=e12]
+      - generic [ref=e13]:
+        - button "Tutti" [ref=e14] [cursor=pointer]:
+          - generic [ref=e15]: Tutti
+        - button "Pubblicati" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: Pubblicati
+        - button "Bozze" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: Bozze
+      - generic [ref=e20]:
+        - generic [ref=e21]: Milan vs Inter
+        - generic [ref=e22]: Serie A — 2025-03-15 20:45
+        - generic [ref=e25]: pubblicato
+        - generic [ref=e26]:
+          - button "Nascondi" [ref=e27] [cursor=pointer]:
+            - generic [ref=e28]: Nascondi
+          - link "Dettaglio" [ref=e29] [cursor=pointer]:
+            - /url: /eventi/1
+            - generic [ref=e30]: Dettaglio
+      - generic [ref=e31]:
+        - generic [ref=e32]: Juventus vs Roma
+        - generic [ref=e33]: Serie A — 2025-03-16 18:00
+        - generic [ref=e36]: bozza
+        - generic [ref=e37]:
+          - button "Pubblica" [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: Pubblica
+          - link "Dettaglio" [ref=e40] [cursor=pointer]:
+            - /url: /eventi/2
+            - generic [ref=e41]: Dettaglio
+      - generic [ref=e42]:
+        - generic [ref=e43]: Napoli vs Lazio
+        - generic [ref=e44]: Serie A — 2025-03-17 15:00
+        - generic [ref=e47]: bozza
+        - generic [ref=e48]:
+          - button "Pubblica" [ref=e49] [cursor=pointer]:
+            - generic [ref=e50]: Pubblica
+          - link "Dettaglio" [ref=e51] [cursor=pointer]:
+            - /url: /eventi/3
+            - generic [ref=e52]: Dettaglio
+  - generic [ref=e53]:
+    - generic "Toggle devtools panel" [ref=e54] [cursor=pointer]:
+      - img [ref=e55]
+    - generic "Toggle Component Inspector" [ref=e60] [cursor=pointer]:
+      - img [ref=e61]

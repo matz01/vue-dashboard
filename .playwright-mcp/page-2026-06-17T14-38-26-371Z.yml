@@ -1,0 +1,62 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - img "Vue logo" [ref=e4]
+      - navigation [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: /about
+        - link "Area riservata" [ref=e9] [cursor=pointer]:
+          - /url: /admin
+        - link "Logout" [active] [ref=e73] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e11]:
+      - heading "Eventi" [level=1] [ref=e12]
+      - alert [ref=e13]:
+        - generic [ref=e15]: 󰅙
+        - generic [ref=e16]: "Accesso negato: devi effettuare il login per visitare l'area riservata."
+        - button "Close" [ref=e18] [cursor=pointer]:
+          - generic [ref=e20]: 󰅖
+      - generic [ref=e21]:
+        - button "Tutti" [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: Tutti
+        - button "Pubblicati" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: Pubblicati
+        - button "Bozze" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: Bozze
+      - generic [ref=e28]:
+        - generic [ref=e29]: Milan vs Inter
+        - generic [ref=e30]: Serie A — 2025-03-15 20:45
+        - generic [ref=e33]: pubblicato
+        - generic [ref=e34]:
+          - button "Nascondi" [ref=e35] [cursor=pointer]:
+            - generic [ref=e36]: Nascondi
+          - link "Dettaglio" [ref=e37] [cursor=pointer]:
+            - /url: /eventi/1
+            - generic [ref=e38]: Dettaglio
+      - generic [ref=e39]:
+        - generic [ref=e40]: Juventus vs Roma
+        - generic [ref=e41]: Serie A — 2025-03-16 18:00
+        - generic [ref=e44]: bozza
+        - generic [ref=e45]:
+          - button "Pubblica" [ref=e46] [cursor=pointer]:
+            - generic [ref=e47]: Pubblica
+          - link "Dettaglio" [ref=e48] [cursor=pointer]:
+            - /url: /eventi/2
+            - generic [ref=e49]: Dettaglio
+      - generic [ref=e50]:
+        - generic [ref=e51]: Napoli vs Lazio
+        - generic [ref=e52]: Serie A — 2025-03-17 15:00
+        - generic [ref=e55]: bozza
+        - generic [ref=e56]:
+          - button "Pubblica" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: Pubblica
+          - link "Dettaglio" [ref=e59] [cursor=pointer]:
+            - /url: /eventi/3
+            - generic [ref=e60]: Dettaglio
+  - generic [ref=e61]:
+    - generic "Toggle devtools panel" [ref=e62] [cursor=pointer]:
+      - img [ref=e63]
+    - generic "Toggle Component Inspector" [ref=e68] [cursor=pointer]:
+      - img [ref=e69]

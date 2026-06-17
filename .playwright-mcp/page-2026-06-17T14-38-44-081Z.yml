@@ -1,0 +1,21 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - img "Vue logo" [ref=e4]
+      - navigation [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: /about
+        - link "Area riservata" [active] [ref=e9] [cursor=pointer]:
+          - /url: /admin
+        - link "Logout" [ref=e65] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e66]:
+      - heading "Area riservata" [level=1] [ref=e67]
+      - paragraph [ref=e68]: Contenuto visibile solo se hai effettuato il login.
+  - generic [ref=e53]:
+    - generic "Toggle devtools panel" [ref=e54] [cursor=pointer]:
+      - img [ref=e55]
+    - generic "Toggle Component Inspector" [ref=e60] [cursor=pointer]:
+      - img [ref=e61]
