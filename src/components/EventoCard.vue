@@ -11,6 +11,12 @@ const emit = defineEmits<{
   cambiaStato: [id: number]
 }>()
 
+const statoDirettaColore: Record<Evento['statoDiretta'], string> = {
+  'in programma': 'scheduled',
+  'in onda': 'onAir',
+  concluso: 'ended',
+}
+
 </script>
 
 <template>
@@ -18,8 +24,11 @@ const emit = defineEmits<{
     <v-card-title>{{ props.evento.casa }} vs {{ props.evento.ospite }}</v-card-title>
     <v-card-subtitle>{{ props.evento.campionato }} — {{ props.evento.data }}</v-card-subtitle>
     <v-card-text>
-      <v-chip :color="props.evento.stato === 'pubblicato' ? 'green' : 'orange'">
+      <v-chip :color="props.evento.stato === 'pubblicato' ? 'success' : 'warning'">
         {{ props.evento.stato }}
+      </v-chip>
+      <v-chip :color="statoDirettaColore[props.evento.statoDiretta]">
+        {{ props.evento.statoDiretta }}
       </v-chip>
     </v-card-text>
 

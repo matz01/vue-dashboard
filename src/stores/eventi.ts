@@ -8,14 +8,15 @@ export interface Evento {
   campionato: string
   data: string
   stato: 'bozza' | 'pubblicato'
+  statoDiretta: 'in programma' | 'in onda' | 'concluso'
 }
 
 export const useEventiStore = defineStore('eventi', () => {
   // STATE
   const eventi = ref<Evento[]>([
-    { id: 1, casa: 'Milan', ospite: 'Inter', campionato: 'Serie A', data: '2025-03-15 20:45', stato: 'pubblicato' },
-    { id: 2, casa: 'Juventus', ospite: 'Roma', campionato: 'Serie A', data: '2025-03-16 18:00', stato: 'bozza' },
-    { id: 3, casa: 'Napoli', ospite: 'Lazio', campionato: 'Serie A', data: '2025-03-17 15:00', stato: 'bozza' },
+    { id: 1, casa: 'Milan', ospite: 'Inter', campionato: 'Serie A', data: '2025-03-15 20:45', stato: 'pubblicato', statoDiretta: 'concluso' },
+    { id: 2, casa: 'Juventus', ospite: 'Roma', campionato: 'Serie A', data: '2025-03-16 18:00', stato: 'bozza', statoDiretta: 'in programma' },
+    { id: 3, casa: 'Napoli', ospite: 'Lazio', campionato: 'Serie A', data: '2025-03-17 15:00', stato: 'bozza', statoDiretta: 'in onda' },
   ])
 
   // GETTERS
