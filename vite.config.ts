@@ -9,7 +9,10 @@ import vuetify from 'vite-plugin-vuetify'
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    vueDevTools({
+      // Forzi il plugin a usare il comando 'webstorm' appena configurato nel PATH
+      launchEditor: 'webstorm',
+    }),
     vuetify({ autoImport: true }),
   ],
   resolve: {

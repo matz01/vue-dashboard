@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {RouterLink, RouterView} from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import {useAuthStore} from '@/stores/auth'
 
 const auth = useAuthStore()
 </script>
@@ -8,33 +8,29 @@ const auth = useAuthStore()
 <template>
 
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="300" height="200" />
+    <v-container>
+      <div class="wrapper">
 
-    <div class="wrapper">
+        <img alt="Vue logo" class="logo" src="@/assets/gemini-svg.svg" width="300" height="200"/>
+        <nav>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/about">About</RouterLink>
+          <RouterLink to="/admin">Area riservata</RouterLink>
+          <a href="#" @click.prevent="auth.loggedIn ? auth.logout() : auth.login()">
+            {{ auth.loggedIn ? 'Logout' : 'Login' }}
+          </a>
+        </nav>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/admin">Area riservata</RouterLink>
-        <a href="#" @click.prevent="auth.loggedIn ? auth.logout() : auth.login()">
-          {{ auth.loggedIn ? 'Logout' : 'Login' }}
-        </a>
-      </nav>
-    </div>
+      </div>
+    </v-container>
   </header>
 
-  <RouterView />
+  <RouterView/>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+  height: 100px;
 }
 
 nav {
@@ -56,6 +52,11 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  text-decoration: none;
+
+  &:visited {
+    color: var(--color-text);
+  }
 }
 
 nav a:first-of-type {
@@ -75,8 +76,10 @@ nav a:first-of-type {
 
   header .wrapper {
     display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: nowrap;
+
   }
 
   nav {
@@ -85,7 +88,7 @@ nav a:first-of-type {
     font-size: 1rem;
 
     padding: 1rem 0;
-    margin-top: 1rem;
+    margin-top: 0;
   }
 }
 </style>
