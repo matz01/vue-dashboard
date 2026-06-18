@@ -32,6 +32,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/forbiddne',
+      name: 'forbidden',
+      component: () => import('../views/ForbiddenView.vue'),
+    },
+    {
       // catch-all: deve restare l'ultima rotta dell'array, altrimenti
       // intercetterebbe anche i path validi definiti dopo di lei
       path: '/:pathMatch(.*)*',
@@ -47,7 +52,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.loggedIn) {
-    return { name: 'home', query: { accessNegato: '1' } }
+    return { name: 'forbidden' }
   }
 })
 

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Archivo',system-ui,sans-serif;background:#0e1116;-webkit-font-smoothing:antialiased}
+  input,select,button{font-family:inherit}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#283039;border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  @keyframes tlPulse{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes tlGlow{0%{box-shadow:0 0 0 0 rgba(255,90,95,.55)}70%{box-shadow:0 0 0 7px rgba(255,90,95,0)}100%{box-shadow:0 0 0 0 rgba(255,90,95,0)}}
+  @keyframes tlBars{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+  @keyframes tlFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes tlSlide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="height:100vh;display:flex;flex-direction:column;background:#0e1116;color:#e6e9ee;font-size:14px;overflow:hidden">
+
+  <!-- topbar -->
+  <div style="height:60px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#11151b;border-bottom:1px solid #232b35">
+    <div style="display:flex;align-items:center;gap:11px">
+      <div style="width:30px;height:30px;border-radius:8px;background:#0e1116;border:1px solid #2a333f;display:flex;align-items:center;justify-content:center;position:relative">
+        <div style="width:15px;height:15px;border:1.5px solid #58e08a;border-radius:50%"></div>
+        <div style="position:absolute;width:1.5px;height:16px;background:#58e08a"></div>
+      </div>
+      <div style="font-weight:800;font-size:16px;letter-spacing:-.02em">Touchline</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;border:1px solid #2a333f;border-radius:4px;padding:2px 7px;margin-left:2px">CONTROL ROOM</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="text-align:right;line-height:1.1;margin-right:6px">
+        <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:#eef1f5">{{ clock }}</div>
+        <div style="font-size:10px;color:#7a8493;letter-spacing:.03em">{{ dateStr }} · UTC</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;background:rgba(255,90,95,.13);border:1px solid rgba(255,90,95,.3);padding:6px 11px;border-radius:7px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#ff5a5f;animation:tlPulse 1.4s infinite"></span>
+        <span style="font-family:'Space Mono',monospace;font-size:12px;color:#ff9a9d;font-weight:700">{{ liveCount }} ON AIR</span>
+      </div>
+      <div style="width:32px;height:32px;border-radius:50%;background:#1f2a36;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#9fc5ff;margin-left:4px">MV</div>
+      <button onClick="{{ openCreate }}" style="display:flex;align-items:center;gap:7px;background:#58e08a;color:#06140c;border:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px;cursor:pointer;margin-left:4px" style-hover="background:#6cf09a">
+        <span style="font-size:16px;line-height:0;margin-top:-1px">+</span> New event
+      </button>
+    </div>
+  </div>
+
+  <div style="flex:1;display:flex;min-height:0">
+    <!-- left nav -->
+    <div style="width:66px;flex:none;background:#0c0f14;border-right:1px solid #1c232c;display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:4px">
+      <div onClick="{{ goEvents }}" style="{{ navEvents }}">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span style="font-size:9px;font-weight:600">Events</span>
+      </div>
+      <div onClick="{{ goLive }}" style="{{ navLive }}">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.4" fill="currentColor"/></svg>
+        <span style="font-size:9px">On air</span>
+      </div>
+      <div onClick="{{ goSchedule }}" style="{{ navSchedule }}">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 7.5h15M6.5 2v3M13.5 2v3" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span style="font-size:9px">Schedule</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585;cursor:pointer" style-hover="color:#aab2bf">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M3 14c3.5 0 7-3.5 7-7M3 17c5.5 0 11-5.5 11-11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="16" r="1.3" fill="currentColor"/></svg>
+        <span style="font-size:9px">Sources</span>
+      </div>
+      <div style="margin-top:auto;margin-bottom:14px;display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585;cursor:pointer" style-hover="color:#aab2bf">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.2" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2.2M10 15.8V18M2 10h2.2M15.8 10H18M4.3 4.3l1.6 1.6M14.1 14.1l1.6 1.6M15.7 4.3l-1.6 1.6M5.9 14.1l-1.6 1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span style="font-size:9px">Settings</span>
+      </div>
+    </div>
+
+    <!-- ===================== EVENTS SCREEN ===================== -->
+    <sc-if value="{{ isEvents }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;min-width:0">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:18px 22px 14px;border-bottom:1px solid #1c232c;flex:none">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px">
+            <div>
+              <div style="font-size:19px;font-weight:700;letter-spacing:-.01em">Events</div>
+              <div style="font-size:12px;color:#7a8493;margin-top:2px">{{ totalEvents }} events today · {{ totalViewersFmt }} watching now</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#141a21;border:1px solid #232b35;border-radius:8px;padding:8px 12px;width:240px;color:#5f6875">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span style="font-size:13px">Search matches…</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;background:#1f2a36;color:#cfe5ff;font-weight:700">ALL · {{ totalEvents }}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;background:rgba(255,90,95,.12);color:#ff9a9d">ON AIR · {{ liveCount }}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493;cursor:pointer" style-hover="background:#161c24">STANDBY · {{ standbyCount }}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493;cursor:pointer" style-hover="background:#161c24">SCHEDULED · {{ scheduledCount }}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493;cursor:pointer" style-hover="background:#161c24">ENDED</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:112px minmax(0,1fr) 64px 96px 84px 22px;gap:12px;padding:11px 22px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#5f6875;border-bottom:1px solid #1c232c;flex:none">
+          <div>STATUS</div><div>MATCH</div><div>KICKOFF</div><div>HEALTH</div><div style="text-align:right">VIEWERS</div><div></div>
+        </div>
+        <div style="overflow-y:auto;flex:1">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+            <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:112px minmax(0,1fr) 64px 96px 84px 22px;gap:12px;padding:14px 22px;align-items:center;border-bottom:1px solid #161c24;cursor:pointer" style-hover="background:#12171e">
+              <div><span style="{{ r.chipDark }}"><span style="{{ r.dotStyle }}"></span>{{ r.label }}</span></div>
+              <div style="display:flex;align-items:center;gap:11px;min-width:0;overflow:hidden">
+                <div style="display:flex">
+                  <div style="{{ r.crestHome }}">{{ r.ha }}</div>
+                  <div style="{{ r.crestAway }};margin-left:-9px">{{ r.aa }}</div>
+                </div>
+                <div style="min-width:0">
+                  <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.home }} <span style="color:#5f6875;font-weight:400">v</span> {{ r.away }}</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5f6875;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.comp }} · {{ r.region }}</div>
+                </div>
+              </div>
+              <div style="font-family:'Space Mono',monospace;font-size:14px;color:#dfe3ea">{{ r.kickoff }}</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:52px;height:6px;border-radius:3px;background:#222a34;overflow:hidden;flex:none"><div style="{{ r.healthBar }}"></div></div>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;{{ r.healthTxt }}">{{ r.healthLabel }}</span>
+              </div>
+              <div style="text-align:right;font-family:'Space Mono',monospace;font-size:14px;{{ r.viewersTxt }}">{{ r.viewersFmt }}</div>
+              <div style="text-align:right;color:#5f6875" style-hover="color:#aab2bf">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- right rail -->
+      <div style="width:272px;flex:none;background:#0c0f14;border-left:1px solid #1c232c;padding:18px;overflow-y:auto">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="width:8px;height:8px;border-radius:50%;background:#ff5a5f;animation:tlPulse 1.4s infinite"></span>
+          <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;color:#cfd5de;font-weight:700">ON AIR MONITOR</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ liveRows }}" as="r" hint-placeholder-count="2">
+            <div onClick="{{ r.open }}" style="background:#11161d;border:1px solid #232b35;border-radius:10px;overflow:hidden;cursor:pointer" style-hover="border-color:#37424f">
+              <div style="height:108px;position:relative;background:repeating-linear-gradient(115deg,#171d25,#171d25 11px,#141a21 11px,#141a21 22px);display:flex;align-items:center;justify-content:center">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="{{ r.crestHome }}">{{ r.ha }}</div>
+                  <span style="font-family:'Space Mono',monospace;font-size:11px;color:#7a8493">{{ r.score }}</span>
+                  <div style="{{ r.crestAway }}">{{ r.aa }}</div>
+                </div>
+                <div style="position:absolute;top:9px;left:9px;display:flex;align-items:center;gap:5px;background:#ff5a5f;color:#fff;padding:3px 7px;border-radius:5px;animation:tlGlow 2s infinite">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#fff"></span>
+                  <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700">LIVE</span>
+                </div>
+                <div style="position:absolute;bottom:9px;right:9px;display:flex;align-items:flex-end;gap:2px;height:16px">
+                  <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite"></span>
+                  <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .2s"></span>
+                  <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .4s"></span>
+                  <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .15s"></span>
+                </div>
+              </div>
+              <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+                <div><div style="font-size:13px;font-weight:600">{{ r.home }} v {{ r.away }}</div><div style="font-size:10px;color:#7a8493">{{ r.comp }} · {{ r.minute }}</div></div>
+                <div style="text-align:right"><div style="font-family:'Space Mono',monospace;font-size:13px;color:#eef1f5">{{ r.viewersFmt }}</div><div style="font-family:'Space Mono',monospace;font-size:9px;color:#5f6875">{{ r.bitrate }} Mbps</div></div>
+              </div>
+            </div>
+          </sc-for>
+          <div style="background:rgba(255,122,69,.08);border:1px solid rgba(255,122,69,.3);border-radius:10px;padding:12px 13px">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 13H3z" stroke="#ff9d6b" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v3.5" stroke="#ff9d6b" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.6" r="0.9" fill="#ff9d6b"/></svg>
+              <span style="font-family:'Space Mono',monospace;font-size:10px;color:#ff9d6b;font-weight:700">SIGNAL ALERT</span>
+            </div>
+            <div style="font-size:12.5px;line-height:1.45;color:#d4b3a0">Liverpool v Chelsea — ingest bitrate dropped to <b style="color:#ffb89a">4.1 Mbps</b>. Failover source recommended.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== LIVE CONTROL ROOM SCREEN ===================== -->
+    <sc-if value="{{ isLive }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;min-width:0">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto">
+        <!-- match header -->
+        <div style="padding:16px 24px;border-bottom:1px solid #1c232c;display:flex;align-items:center;justify-content:space-between;flex:none">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div onClick="{{ goEvents }}" style="display:flex;align-items:center;gap:6px;color:#7a8493;font-size:12px;cursor:pointer;border:1px solid #232b35;border-radius:7px;padding:7px 11px" style-hover="color:#cfd5de;border-color:#37424f">← Events</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="{{ sel.crestHomeLg }}">{{ sel.ha }}</div>
+              <div>
+                <div style="font-size:20px;font-weight:800;letter-spacing:-.01em">{{ sel.home }} <span style="color:#5f6875;font-weight:500">{{ sel.score }}</span> {{ sel.away }}</div>
+                <div style="font-size:12px;color:#7a8493">{{ sel.comp }} · {{ sel.region }} · KO {{ sel.kickoff }}</div>
+              </div>
+              <div style="{{ sel.crestAwayLg }}">{{ sel.aa }}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="{{ sel.chipDark }}"><span style="{{ sel.dotStyle }}"></span>{{ sel.label }} · {{ sel.minute }}</span>
+            <button style="background:transparent;border:1px solid #2a333f;color:#aab2bf;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer" style-hover="border-color:#37424f">Add commentary</button>
+            <button style="background:rgba(255,90,95,.14);border:1px solid rgba(255,90,95,.4);color:#ff8a8d;font-size:13px;font-weight:700;padding:9px 14px;border-radius:8px;cursor:pointer" style-hover="background:rgba(255,90,95,.22)">■ Take off air</button>
+          </div>
+        </div>
+
+        <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
+          <!-- program monitor -->
+          <div style="border-radius:14px;overflow:hidden;border:1px solid #232b35;background:#070a0e">
+            <div style="position:relative;aspect-ratio:16/9;background:repeating-linear-gradient(115deg,#12171e,#12171e 16px,#0f141a 16px,#0f141a 32px);display:flex;align-items:center;justify-content:center">
+              <div style="font-family:'Space Mono',monospace;font-size:12px;color:#39414c;letter-spacing:.1em">PROGRAM OUT · 1080p60</div>
+              <div style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:#ff5a5f;color:#fff;padding:5px 10px;border-radius:6px;animation:tlGlow 2s infinite">
+                <span style="width:7px;height:7px;border-radius:50%;background:#fff"></span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em">ON AIR</span>
+              </div>
+              <div style="position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:13px;color:#cfd5de;background:rgba(0,0,0,.45);padding:5px 10px;border-radius:6px">{{ clock }}</div>
+              <!-- scorebug -->
+              <div style="position:absolute;bottom:16px;left:16px;display:flex;align-items:stretch;border-radius:7px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4)">
+                <div style="display:flex;align-items:center;gap:8px;background:#11151b;padding:8px 12px">
+                  <div style="{{ sel.crestHome }}">{{ sel.ha }}</div>
+                  <span style="font-weight:700;font-size:14px">{{ sel.ha }}</span>
+                </div>
+                <div style="display:flex;align-items:center;font-family:'Space Mono',monospace;font-weight:700;font-size:16px;background:#58e08a;color:#06140c;padding:8px 14px">{{ sel.score }}</div>
+                <div style="display:flex;align-items:center;gap:8px;background:#11151b;padding:8px 12px">
+                  <span style="font-weight:700;font-size:14px">{{ sel.aa }}</span>
+                  <div style="{{ sel.crestAway }}">{{ sel.aa }}</div>
+                </div>
+                <div style="display:flex;align-items:center;font-family:'Space Mono',monospace;font-size:13px;background:#1a212a;color:#cfd5de;padding:8px 12px">{{ sel.minute }}</div>
+              </div>
+              <div style="position:absolute;bottom:18px;right:18px;display:flex;align-items:flex-end;gap:3px;height:26px">
+                <span style="width:4px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite"></span>
+                <span style="width:4px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .15s"></span>
+                <span style="width:4px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .3s"></span>
+                <span style="width:4px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .45s"></span>
+                <span style="width:4px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .25s"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- stat tiles -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+            <div style="background:#11161d;border:1px solid #232b35;border-radius:11px;padding:15px">
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;letter-spacing:.04em">BITRATE</div>
+              <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:#eef1f5;margin-top:6px">{{ sel.bitrate }}<span style="font-size:12px;color:#7a8493"> Mbps</span></div>
+            </div>
+            <div style="background:#11161d;border:1px solid #232b35;border-radius:11px;padding:15px">
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;letter-spacing:.04em">RESOLUTION</div>
+              <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:#eef1f5;margin-top:6px">{{ sel.resolution }}</div>
+            </div>
+            <div style="background:#11161d;border:1px solid #232b35;border-radius:11px;padding:15px">
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;letter-spacing:.04em">LATENCY</div>
+              <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;{{ sel.latencyTxt }};margin-top:6px">{{ sel.latency }}</div>
+            </div>
+            <div style="background:#11161d;border:1px solid #232b35;border-radius:11px;padding:15px">
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;letter-spacing:.04em">DROPPED</div>
+              <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;{{ sel.droppedTxt }};margin-top:6px">{{ sel.dropped }}</div>
+            </div>
+            <div style="background:#11161d;border:1px solid #232b35;border-radius:11px;padding:15px">
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;letter-spacing:.04em">HEALTH</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+                <div style="flex:1;height:7px;border-radius:4px;background:#222a34;overflow:hidden"><div style="{{ sel.healthBar }}"></div></div>
+                <span style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;{{ sel.healthTxt }}">{{ sel.healthLabel }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- viewer trend -->
+          <div style="background:#11161d;border:1px solid #232b35;border-radius:14px;padding:18px 20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div style="font-size:14px;font-weight:700">Concurrent viewers</div>
+              <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#58e08a">{{ sel.viewersFmt }}</div>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:3px;height:90px">
+              <sc-for list="{{ spark }}" as="b" hint-placeholder-count="40">
+                <div style="{{ b.style }}"></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- live right rail: sources + commentary -->
+      <div style="width:272px;flex:none;background:#0c0f14;border-left:1px solid #1c232c;padding:18px;overflow-y:auto">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;color:#cfd5de;font-weight:700;margin-bottom:13px">INGEST SOURCES</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+          <div style="background:#11161d;border:1px solid #2c6b45;border-radius:10px;padding:13px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:600">Primary · SRT</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#06140c;background:#58e08a;padding:3px 7px;border-radius:5px;font-weight:700">ACTIVE</span>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7a8493">srt://ingest.touchline.tv:9000</div>
+          </div>
+          <div style="background:#11161d;border:1px solid #232b35;border-radius:10px;padding:13px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:600;color:#aeb6c2">Backup · RTMP</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#f5cf6a;background:rgba(240,180,41,.14);padding:3px 7px;border-radius:5px;font-weight:700">STANDBY</span>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:#5f6875">rtmp://backup.touchline.tv/live</div>
+            <button style="margin-top:9px;width:100%;background:#1c2530;border:none;color:#cfd5de;font-size:12px;font-weight:600;padding:8px;border-radius:7px;cursor:pointer" style-hover="background:#243040">Switch to backup</button>
+          </div>
+        </div>
+
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;color:#cfd5de;font-weight:700;margin-bottom:13px">COMMENTARY</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:center;gap:11px;background:#11161d;border:1px solid #232b35;border-radius:10px;padding:11px 13px">
+            <div style="width:34px;height:34px;border-radius:50%;background:#23344a;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;color:#9fc5ff;font-weight:700">CW</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Clive Webb</div><div style="font-size:11px;color:#7a8493">Lead commentator · EN</div></div>
+            <span style="width:7px;height:7px;border-radius:50%;background:#58e08a"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;background:#11161d;border:1px solid #232b35;border-radius:10px;padding:11px 13px">
+            <div style="width:34px;height:34px;border-radius:50%;background:#3a2a4a;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;color:#d3a9ff;font-weight:700">AR</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Ana Reyes</div><div style="font-size:11px;color:#7a8493">Co-commentary · ES</div></div>
+            <span style="width:7px;height:7px;border-radius:50%;background:#58e08a"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:7px;border:1px dashed #2a333f;border-radius:10px;padding:11px;color:#7a8493;font-size:12px;cursor:pointer" style-hover="border-color:#37424f;color:#aab2bf">+ Add presenter</div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== SCHEDULE SCREEN ===================== -->
+    <sc-if value="{{ isSchedule }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto">
+      <div style="padding:18px 24px 14px;border-bottom:1px solid #1c232c;flex:none">
+        <div style="font-size:19px;font-weight:700;letter-spacing:-.01em">Schedule · {{ dateStr }}</div>
+        <div style="font-size:12px;color:#7a8493;margin-top:2px">Day rundown — {{ totalEvents }} events across {{ liveCount }} live channels</div>
+      </div>
+      <div style="padding:22px 24px;max-width:920px">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div style="display:flex;gap:18px;align-items:stretch">
+            <div style="width:62px;flex:none;text-align:right;font-family:'Space Mono',monospace;font-size:14px;color:#dfe3ea;padding-top:16px">{{ r.kickoff }}</div>
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center">
+              <div style="width:11px;height:11px;border-radius:50%;{{ r.dotStyle }};margin-top:18px"></div>
+              <div style="width:2px;flex:1;background:#1c232c"></div>
+            </div>
+            <div onClick="{{ r.open }}" style="flex:1;margin-bottom:12px;background:#11161d;border:1px solid #232b35;border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" style-hover="border-color:#37424f">
+              <div style="display:flex;align-items:center;gap:13px">
+                <div style="display:flex"><div style="{{ r.crestHome }}">{{ r.ha }}</div><div style="{{ r.crestAway }};margin-left:-9px">{{ r.aa }}</div></div>
+                <div>
+                  <div style="font-size:15px;font-weight:600">{{ r.home }} <span style="color:#5f6875;font-weight:400">v</span> {{ r.away }}</div>
+                  <div style="font-size:11px;color:#7a8493">{{ r.comp }} · {{ r.id }} · {{ r.region }}</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px">
+                <span style="{{ r.chipDark }}"><span style="{{ r.dotStyle }}"></span>{{ r.label }}</span>
+                <div style="font-family:'Space Mono',monospace;font-size:14px;width:90px;text-align:right;{{ r.viewersTxt }}">{{ r.viewersFmt }}</div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+
+  <!-- ===== CREATE EVENT MODAL ===== -->
+  <sc-if value="{{ showCreate }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCreate }}" style="position:fixed;inset:0;background:rgba(6,8,11,.66);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50">
+      <div onClick="{{ stop }}" style="width:560px;max-height:92vh;overflow-y:auto;background:#11151b;border:1px solid #2a333f;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:tlFade .25s ease">
+        <div style="padding:22px 24px;border-bottom:1px solid #232b35;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:18px;font-weight:800;letter-spacing:-.01em">New streaming event</div>
+            <div style="font-size:12px;color:#7a8493;margin-top:2px">Set the match details to schedule a broadcast</div>
+          </div>
+          <div onClick="{{ closeCreate }}" style="cursor:pointer;color:#7a8493;font-size:22px;line-height:1" style-hover="color:#fff">×</div>
+        </div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">COMPETITION</label>
+            <select value="{{ form.comp }}" onChange="{{ onComp }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px;cursor:pointer">
+              <option value="">Select competition…</option>
+              <option value="Premier League">Premier League</option>
+              <option value="LaLiga">LaLiga</option>
+              <option value="Serie A">Serie A</option>
+              <option value="Bundesliga">Bundesliga</option>
+              <option value="Ligue 1">Ligue 1</option>
+              <option value="Champions League">Champions League</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end">
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">HOME TEAM</label>
+              <input value="{{ form.home }}" onInput="{{ onHome }}" placeholder="e.g. Tottenham" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px" style-focus="border-color:#58e08a;outline:none"/>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:13px;color:#5f6875;padding-bottom:12px">v</div>
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">AWAY TEAM</label>
+              <input value="{{ form.away }}" onInput="{{ onAway }}" placeholder="e.g. Newcastle" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px" style-focus="border-color:#58e08a;outline:none"/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">KICKOFF DATE</label>
+              <input type="date" value="{{ form.date }}" onInput="{{ onDate }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:10px 13px;color:#e6e9ee;font-size:14px;color-scheme:dark"/>
+            </div>
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">KICKOFF TIME</label>
+              <input type="time" value="{{ form.time }}" onInput="{{ onTime }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:10px 13px;color:#e6e9ee;font-size:14px;color-scheme:dark"/>
+            </div>
+          </div>
+          <div>
+            <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">STREAM SOURCE (INGEST URL) <span style="color:#4a525e">· optional</span></label>
+            <input value="{{ form.source }}" onInput="{{ onSource }}" placeholder="srt://ingest.touchline.tv:9000" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px;font-family:'Space Mono',monospace" style-focus="border-color:#58e08a;outline:none"/>
+          </div>
+        </div>
+        <div style="padding:18px 24px;border-top:1px solid #232b35;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;color:#5f6875">{{ formHint }}</div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ closeCreate }}" style="background:transparent;border:1px solid #2a333f;color:#aab2bf;font-size:13px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer" style-hover="border-color:#3a4452">Cancel</button>
+            <button onClick="{{ submitCreate }}" style="{{ submitStyle }}">Create event</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#58e08a;color:#06140c;padding:13px 20px;border-radius:10px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:60;animation:tlFade .3s ease">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    now: new Date(),
+    screen: 'events',
+    selectedId: 'EV-2041',
+    showCreate: false,
+    form: { comp:'', home:'', away:'', date:'', time:'', source:'' },
+    toast: null,
+    history: {},
+    events: [
+      {id:'EV-2041', status:'live', home:'Man City', hc:'#6CABDD', htc:'#0b1f33', ha:'MCI', away:'Arsenal', ac:'#EF0107', atc:'#fff', aa:'ARS', comp:'Premier League', kickoff:'20:45', viewers:412380, bitrate:'12.4', health:98, region:'UK · Global', score:'1 – 0', minute:"63'", resolution:'1080p60', latency:'3.2s', dropped:'0.01%'},
+      {id:'EV-2042', status:'live', home:'Real Madrid', hc:'#FEBE10', htc:'#1a1a1a', ha:'RMA', away:'Sevilla', ac:'#D00027', atc:'#fff', aa:'SEV', comp:'LaLiga', kickoff:'21:00', viewers:388120, bitrate:'11.8', health:95, region:'ES · LATAM', score:'2 – 1', minute:"71'", resolution:'1080p60', latency:'2.8s', dropped:'0.00%'},
+      {id:'EV-2043', status:'issue', home:'Liverpool', hc:'#C8102E', htc:'#fff', ha:'LIV', away:'Chelsea', ac:'#034694', atc:'#fff', aa:'CHE', comp:'Premier League', kickoff:'20:00', viewers:201540, bitrate:'4.1', health:42, region:'UK · Global', score:'0 – 0', minute:"28'", resolution:'720p50', latency:'8.6s', dropped:'1.4%'},
+      {id:'EV-2044', status:'encoding', home:'Inter', hc:'#0068A8', htc:'#fff', ha:'INT', away:'Juventus', ac:'#111111', atc:'#fff', aa:'JUV', comp:'Serie A', kickoff:'20:45', viewers:0, bitrate:'—', health:80, region:'IT', score:'–', minute:'pre', resolution:'—', latency:'—', dropped:'—'},
+      {id:'EV-2045', status:'scheduled', home:'PSG', hc:'#004170', htc:'#fff', ha:'PSG', away:'Marseille', ac:'#2FAEE0', atc:'#0b1f33', aa:'OM', comp:'Ligue 1', kickoff:'21:00', viewers:0, bitrate:'—', health:100, region:'FR', score:'–', minute:'—', resolution:'—', latency:'—', dropped:'—'},
+      {id:'EV-2046', status:'scheduled', home:'Bayern', hc:'#DC052D', htc:'#fff', ha:'FCB', away:'Dortmund', ac:'#FDE100', atc:'#1a1a1a', aa:'BVB', comp:'Bundesliga', kickoff:'18:30', viewers:0, bitrate:'—', health:100, region:'DE', score:'–', minute:'—', resolution:'—', latency:'—', dropped:'—'},
+      {id:'EV-2047', status:'scheduled', home:'Napoli', hc:'#12A0D7', htc:'#fff', ha:'NAP', away:'Roma', ac:'#8E1F2F', atc:'#fff', aa:'ROM', comp:'Serie A', kickoff:'19:45', viewers:0, bitrate:'—', health:100, region:'IT', score:'–', minute:'—', resolution:'—', latency:'—', dropped:'—'},
+      {id:'EV-2040', status:'ended', home:'Barcelona', hc:'#A50044', htc:'#fff', ha:'BAR', away:'Atlético', ac:'#CB3524', atc:'#fff', aa:'ATM', comp:'LaLiga', kickoff:'FT', viewers:0, bitrate:'—', health:100, region:'ES', score:'3 – 2', minute:'FT', resolution:'—', latency:'—', dropped:'—'},
+    ],
+  };
+
+  META = {
+    live:     {label:'ON AIR',       color:'#ff5a5f', dchipBg:'rgba(255,90,95,.15)',  dfg:'#ff8a8d', lchipBg:'rgba(229,45,45,.10)',  lfg:'#d92d2d'},
+    scheduled:{label:'SCHEDULED',    color:'#4aa3ff', dchipBg:'rgba(74,163,255,.13)', dfg:'#86c2ff', lchipBg:'rgba(37,99,235,.09)',  lfg:'#2563eb'},
+    encoding: {label:'STANDBY',      color:'#f0b429', dchipBg:'rgba(240,180,41,.15)', dfg:'#f5cf6a', lchipBg:'rgba(176,124,10,.11)', lfg:'#b07c0a'},
+    issue:    {label:'SIGNAL ISSUE', color:'#ff7a45', dchipBg:'rgba(255,122,69,.17)', dfg:'#ffa173', lchipBg:'rgba(210,84,30,.10)',  lfg:'#d2541e'},
+    ended:    {label:'ENDED',        color:'#8b94a3', dchipBg:'rgba(139,148,163,.14)',dfg:'#aab2bf', lchipBg:'rgba(107,114,128,.09)',lfg:'#6b7280'},
+  };
+
+  componentDidMount(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const hist = {};
+    this.state.events.forEach(e => { if(e.status==='live'||e.status==='issue') hist[e.id] = Array.from({length:40}, (_,i)=> e.viewers * (0.86 + 0.14*Math.sin(i/4) + Math.random()*0.05)); });
+    this.setState({ form: { ...this.state.form, date: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time: '20:45' }, history: hist });
+    this._t = setInterval(() => {
+      this.setState(s => {
+        const hist = { ...s.history };
+        const events = s.events.map(e => {
+          if (e.status === 'live' || e.status === 'issue') {
+            const swing = e.status==='issue' ? 0.55 : 0.42;
+            const delta = Math.round((Math.random() - swing) * 1900);
+            const v = Math.max(40000, e.viewers + delta);
+            const arr = (hist[e.id]||[]).concat(v); if (arr.length>40) arr.shift(); hist[e.id]=arr;
+            return { ...e, viewers: v };
+          }
+          return e;
+        });
+        return { now: new Date(), events, history: hist };
+      });
+    }, 1400);
+  }
+  componentWillUnmount(){ clearInterval(this._t); if(this._toastT) clearTimeout(this._toastT); }
+
+  fmt(n){ return n >= 1000 ? n.toLocaleString('en-US') : String(n); }
+  crest(bg, fg, size){ const s=size||30; return `width:${s}px;height:${s}px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:${s>40?13:10}px;background:${bg};color:${fg};border:1px solid rgba(255,255,255,.12)`; }
+  chip(bg, fg){ return `display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.03em;padding:4px 9px;border-radius:6px;background:${bg};color:${fg};white-space:nowrap`; }
+
+  buildRow(e){
+    const m = this.META[e.status];
+    const dot = `width:6px;height:6px;border-radius:50%;flex:none;background:${m.color}` + (e.status==='live'?';animation:tlPulse 1.4s infinite':'');
+    const hc = e.health>=80?'#46d18a':e.health>=55?'#f0b429':'#ff5a5f';
+    const isData = e.status==='live'||e.status==='issue';
+    return {
+      ...e, label:m.label, dotStyle:dot,
+      chipDark:this.chip(m.dchipBg,m.dfg),
+      crestHome:this.crest(e.hc,e.htc,30), crestAway:this.crest(e.ac,e.atc,30),
+      crestHomeLg:this.crest(e.hc,e.htc,46), crestAwayLg:this.crest(e.ac,e.atc,46),
+      healthBar:`height:100%;border-radius:3px;width:${e.health}%;background:${hc}`,
+      healthLabel:e.status==='ended'?'—':e.health+'%',
+      healthTxt:`color:${e.status==='ended'?'#5f6875':hc}`,
+      latencyTxt:`color:${e.status==='issue'?'#ff8a8d':'#eef1f5'}`,
+      droppedTxt:`color:${e.status==='issue'?'#ff8a8d':'#eef1f5'}`,
+      viewersFmt:isData?this.fmt(e.viewers):(e.status==='scheduled'?'—':e.status==='encoding'?'standby':'ended'),
+      viewersTxt:`color:${isData?'#eef1f5':'#5f6875'};font-weight:${isData?'700':'400'}`,
+      open:()=>{ if(e.status==='live'||e.status==='issue') this.setState({screen:'live', selectedId:e.id}); },
+    };
+  }
+
+  renderVals(){
+    const d=this.state.now, pad=n=>String(n).padStart(2,'0');
+    const clock=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const dateStr=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
+    const rows=this.state.events.map(e=>this.buildRow(e));
+    const liveRows=rows.filter(r=>r.status==='live');
+    const totalViewers=this.state.events.filter(e=>e.status==='live'||e.status==='issue').reduce((a,e)=>a+e.viewers,0);
+    const sel=rows.find(r=>r.id===this.state.selectedId)||liveRows[0]||rows[0];
+
+    const histArr=this.state.history[sel?sel.id:'']||[];
+    const max=Math.max(...histArr,1);
+    const spark=histArr.map((v,i)=>({ style:`flex:1;min-width:3px;border-radius:2px 2px 0 0;background:${i===histArr.length-1?'#58e08a':'#2f7a52'};height:${Math.max(8,(v/max)*100)}%` }));
+
+    const navBase='display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;cursor:pointer';
+    const navOn=navBase+';background:#1a212a;color:#58e08a;font-weight:600';
+    const navOff=navBase+';color:#6b7585';
+    const sc=this.state.screen;
+
+    const f=this.state.form;
+    const canSubmit=f.comp&&f.home.trim()&&f.away.trim()&&f.time;
+    const submitStyle=canSubmit
+      ?"background:#58e08a;color:#06140c;border:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:9px;cursor:pointer"
+      :"background:#1c2530;color:#5f6875;border:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:9px;cursor:not-allowed";
+
+    return {
+      clock, dateStr, rows, liveRows, sel, spark,
+      liveCount:liveRows.length,
+      standbyCount:this.state.events.filter(e=>e.status==='encoding').length,
+      scheduledCount:this.state.events.filter(e=>e.status==='scheduled').length,
+      totalEvents:this.state.events.length,
+      totalViewersFmt:this.fmt(totalViewers),
+      isEvents:sc==='events', isLive:sc==='live', isSchedule:sc==='schedule',
+      navEvents:sc==='events'?navOn:navOff, navLive:sc==='live'?navOn:navOff, navSchedule:sc==='schedule'?navOn:navOff,
+      showCreate:this.state.showCreate, form:this.state.form, toast:this.state.toast,
+      formHint:canSubmit?'Ready to schedule':'Competition, teams & kickoff time required', submitStyle,
+      goEvents:()=>this.setState({screen:'events'}),
+      goLive:()=>this.setState({screen:'live'}),
+      goSchedule:()=>this.setState({screen:'schedule'}),
+      onComp:e=>this.setState({form:{...this.state.form,comp:e.target.value}}),
+      onHome:e=>this.setState({form:{...this.state.form,home:e.target.value}}),
+      onAway:e=>this.setState({form:{...this.state.form,away:e.target.value}}),
+      onDate:e=>this.setState({form:{...this.state.form,date:e.target.value}}),
+      onTime:e=>this.setState({form:{...this.state.form,time:e.target.value}}),
+      onSource:e=>this.setState({form:{...this.state.form,source:e.target.value}}),
+      openCreate:()=>this.setState({showCreate:true}),
+      closeCreate:()=>this.setState({showCreate:false}),
+      stop:e=>e.stopPropagation(),
+      submitCreate:()=>{
+        const f=this.state.form;
+        if(!(f.comp&&f.home.trim()&&f.away.trim()&&f.time)) return;
+        const ab=s=>s.trim().replace(/[^a-zA-Z]/g,'').slice(0,3).toUpperCase()||'TBD';
+        const id='EV-'+(2048+Math.floor(Math.random()*900));
+        const ne={id,status:'scheduled',home:f.home.trim(),hc:'#3a4452',htc:'#fff',ha:ab(f.home),away:f.away.trim(),ac:'#2a333f',atc:'#fff',aa:ab(f.away),comp:f.comp,kickoff:f.time,viewers:0,bitrate:'—',health:100,region:'New',score:'–',minute:'—',resolution:'—',latency:'—',dropped:'—'};
+        this.setState({events:[ne,...this.state.events],showCreate:false,form:{comp:'',home:'',away:'',date:f.date,time:'20:45',source:''},toast:`Event created — ${ne.home} v ${ne.away}`});
+        if(this._toastT) clearTimeout(this._toastT);
+        this._toastT=setTimeout(()=>this.setState({toast:null}),2800);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

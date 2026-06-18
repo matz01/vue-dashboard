@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Archivo',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  input,select,button{font-family:inherit}
+  @keyframes tlPulse{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes tlGlow{0%{box-shadow:0 0 0 0 rgba(255,90,95,.55)}70%{box-shadow:0 0 0 7px rgba(255,90,95,0)}100%{box-shadow:0 0 0 0 rgba(255,90,95,0)}}
+  @keyframes tlBars{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+  @keyframes tlFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-width:100%;min-height:100vh;width:max-content;box-sizing:border-box;padding:48px;background:#e7e5df">
+
+  <!-- ===== context header ===== -->
+  <div style="max-width:980px;margin-bottom:40px;font-family:'Archivo',sans-serif">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <div style="width:34px;height:34px;border-radius:9px;background:#0e1116;display:flex;align-items:center;justify-content:center;position:relative">
+        <div style="width:17px;height:17px;border:1.6px solid #58e08a;border-radius:50%"></div>
+        <div style="position:absolute;width:1.6px;height:18px;background:#58e08a"></div>
+      </div>
+      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em;color:#15181d">Touchline</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8678;border:1px solid #cfccc2;border-radius:5px;padding:3px 8px">LIVE FOOTBALL CONTROL</div>
+    </div>
+    <p style="font-size:15px;line-height:1.55;color:#3f3d36;max-width:780px;text-wrap:pretty">
+      A control surface for editors running ~50 matches a week — built around the editor's core job: get a match
+      configured (teams, competition, kickoff, source) and on air, then watch its health. Below are <b>three directions</b>
+      to compare. All share the same live-ticking data; <b>Direction A is interactive</b> — try <b>+ New event</b>.
+    </p>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:11px">
+      <span style="background:#0e1116;color:#dfe3ea;padding:5px 10px;border-radius:5px">A · CONTROL ROOM — dark, dense</span>
+      <span style="background:#fff;color:#3f3d36;border:1px solid #d7d4ca;padding:5px 10px;border-radius:5px">B · STUDIO — light, spacious</span>
+      <span style="background:#0b0d12;color:#c6f04e;padding:5px 10px;border-radius:5px">C · MATCHDAY — bold rundown</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:48px;align-items:flex-start">
+
+    <!-- ============================================================ -->
+    <!-- DIRECTION A — CONTROL ROOM -->
+    <!-- ============================================================ -->
+    <div style="flex:none;width:1380px">
+      <div style="font-family:'Space Mono',monospace;font-size:12px;color:#6f6c62;margin-bottom:10px;letter-spacing:.04em">A · CONTROL ROOM</div>
+      <div data-screen-label="Control Room" style="border-radius:3px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.18);background:#0e1116;color:#e6e9ee;font-size:14px">
+
+        <!-- topbar -->
+        <div style="height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#11151b;border-bottom:1px solid #232b35">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:30px;height:30px;border-radius:8px;background:#0e1116;border:1px solid #2a333f;display:flex;align-items:center;justify-content:center;position:relative">
+              <div style="width:15px;height:15px;border:1.5px solid #58e08a;border-radius:50%"></div>
+              <div style="position:absolute;width:1.5px;height:16px;background:#58e08a"></div>
+            </div>
+            <div style="font-weight:800;font-size:16px;letter-spacing:-.02em">Touchline</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#7a8493;border:1px solid #2a333f;border-radius:4px;padding:2px 7px;margin-left:2px">CONTROL ROOM</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="text-align:right;line-height:1.1;margin-right:6px">
+              <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:#eef1f5">{{ clock }}</div>
+              <div style="font-size:10px;color:#7a8493;letter-spacing:.03em">{{ dateStr }} · UTC</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(255,90,95,.13);border:1px solid rgba(255,90,95,.3);padding:6px 11px;border-radius:7px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#ff5a5f;animation:tlPulse 1.4s infinite"></span>
+              <span style="font-family:'Space Mono',monospace;font-size:12px;color:#ff9a9d;font-weight:700">{{ liveCount }} ON AIR</span>
+            </div>
+            <button onClick="{{ openCreate }}" style="display:flex;align-items:center;gap:7px;background:#58e08a;color:#06140c;border:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px;cursor:pointer" style-hover="background:#6cf09a">
+              <span style="font-size:16px;line-height:0;margin-top:-1px">+</span> New event
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex;height:820px">
+          <!-- left nav -->
+          <div style="width:66px;flex:none;background:#0c0f14;border-right:1px solid #1c232c;display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:4px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;background:#1a212a;color:#58e08a">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.4" stroke="currentColor" stroke-width="1.5"/></svg>
+              <span style="font-size:9px;font-weight:600">Events</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585" style-hover="color:#aab2bf">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 7.5h15M6.5 2v3M13.5 2v3" stroke="currentColor" stroke-width="1.5"/></svg>
+              <span style="font-size:9px">Schedule</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585" style-hover="color:#aab2bf">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.4" fill="currentColor"/></svg>
+              <span style="font-size:9px">On air</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585" style-hover="color:#aab2bf">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M3 14c3.5 0 7-3.5 7-7M3 17c5.5 0 11-5.5 11-11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="16" r="1.3" fill="currentColor"/></svg>
+              <span style="font-size:9px">Sources</span>
+            </div>
+            <div style="margin-top:auto;margin-bottom:14px;display:flex;flex-direction:column;align-items:center;gap:5px;width:54px;padding:9px 0;border-radius:9px;color:#6b7585" style-hover="color:#aab2bf">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.2" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2.2M10 15.8V18M2 10h2.2M15.8 10H18M4.3 4.3l1.6 1.6M14.1 14.1l1.6 1.6M15.7 4.3l-1.6 1.6M5.9 14.1l-1.6 1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span style="font-size:9px">Settings</span>
+            </div>
+          </div>
+
+          <!-- main -->
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+            <!-- toolbar -->
+            <div style="padding:18px 22px 14px;border-bottom:1px solid #1c232c">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px">
+                <div>
+                  <div style="font-size:19px;font-weight:700;letter-spacing:-.01em">Events</div>
+                  <div style="font-size:12px;color:#7a8493;margin-top:2px">{{ totalEvents }} events today · {{ totalViewersFmt }} watching now</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;background:#141a21;border:1px solid #232b35;border-radius:8px;padding:8px 12px;width:240px;color:#5f6875">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span style="font-size:13px">Search matches…</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:7px">
+                <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;background:#1f2a36;color:#cfe5ff;font-weight:700">ALL · {{ totalEvents }}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;background:rgba(255,90,95,.12);color:#ff9a9d">ON AIR · {{ liveCount }}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493" style-hover="background:#161c24">STANDBY · {{ standbyCount }}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493" style-hover="background:#161c24">SCHEDULED · {{ scheduledCount }}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;padding:6px 12px;border-radius:6px;color:#7a8493" style-hover="background:#161c24">ENDED</span>
+              </div>
+            </div>
+
+            <!-- table head -->
+            <div style="display:grid;grid-template-columns:130px 1fr 130px 92px 150px 130px 40px;gap:14px;padding:11px 22px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#5f6875;border-bottom:1px solid #1c232c">
+              <div>STATUS</div><div>MATCH</div><div>COMPETITION</div><div>KICKOFF</div><div>STREAM HEALTH</div><div style="text-align:right">VIEWERS</div><div></div>
+            </div>
+
+            <!-- rows -->
+            <div style="overflow:hidden">
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:130px 1fr 130px 92px 150px 130px 40px;gap:14px;padding:14px 22px;align-items:center;border-bottom:1px solid #161c24" style-hover="background:#12171e">
+                  <!-- status -->
+                  <div>
+                    <span style="{{ r.chipDark }}">
+                      <span style="{{ r.dotStyle }}"></span>{{ r.label }}
+                    </span>
+                  </div>
+                  <!-- match -->
+                  <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                    <div style="display:flex">
+                      <div style="{{ r.crestHome }}">{{ r.ha }}</div>
+                      <div style="{{ r.crestAway }};margin-left:-9px">{{ r.aa }}</div>
+                    </div>
+                    <div style="min-width:0">
+                      <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.home }} <span style="color:#5f6875;font-weight:400">v</span> {{ r.away }}</div>
+                      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5f6875">{{ r.id }} · {{ r.region }}</div>
+                    </div>
+                  </div>
+                  <!-- comp -->
+                  <div style="font-size:13px;color:#aeb6c2">{{ r.comp }}</div>
+                  <!-- kickoff -->
+                  <div style="font-family:'Space Mono',monospace;font-size:14px;color:#dfe3ea">{{ r.kickoff }}</div>
+                  <!-- health -->
+                  <div style="display:flex;align-items:center;gap:9px">
+                    <div style="width:74px;height:6px;border-radius:3px;background:#222a34;overflow:hidden">
+                      <div style="{{ r.healthBar }}"></div>
+                    </div>
+                    <span style="font-family:'Space Mono',monospace;font-size:11px;{{ r.healthTxt }}">{{ r.healthLabel }}</span>
+                  </div>
+                  <!-- viewers -->
+                  <div style="text-align:right;font-family:'Space Mono',monospace;font-size:14px;{{ r.viewersTxt }}">{{ r.viewersFmt }}</div>
+                  <!-- action -->
+                  <div style="text-align:right;color:#5f6875;cursor:pointer" style-hover="color:#aab2bf">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- right rail -->
+          <div style="width:312px;flex:none;background:#0c0f14;border-left:1px solid #1c232c;padding:18px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#ff5a5f;animation:tlPulse 1.4s infinite"></span>
+              <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;color:#cfd5de;font-weight:700">ON AIR MONITOR</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ liveRows }}" as="r" hint-placeholder-count="2">
+                <div style="background:#11161d;border:1px solid #232b35;border-radius:10px;overflow:hidden">
+                  <div style="height:108px;position:relative;background:repeating-linear-gradient(115deg,#171d25,#171d25 11px,#141a21 11px,#141a21 22px);display:flex;align-items:center;justify-content:center">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="{{ r.crestHome }}">{{ r.ha }}</div>
+                      <span style="font-family:'Space Mono',monospace;font-size:11px;color:#7a8493">v</span>
+                      <div style="{{ r.crestAway }}">{{ r.aa }}</div>
+                    </div>
+                    <div style="position:absolute;top:9px;left:9px;display:flex;align-items:center;gap:5px;background:#ff5a5f;color:#fff;padding:3px 7px;border-radius:5px;animation:tlGlow 2s infinite">
+                      <span style="width:6px;height:6px;border-radius:50%;background:#fff"></span>
+                      <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em">LIVE</span>
+                    </div>
+                    <div style="position:absolute;bottom:9px;right:9px;display:flex;align-items:flex-end;gap:2px;height:16px">
+                      <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite"></span>
+                      <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .2s"></span>
+                      <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .4s"></span>
+                      <span style="width:3px;background:#58e08a;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .15s"></span>
+                    </div>
+                  </div>
+                  <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                      <div style="font-size:13px;font-weight:600">{{ r.home }} v {{ r.away }}</div>
+                      <div style="font-size:10px;color:#7a8493">{{ r.comp }}</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-family:'Space Mono',monospace;font-size:13px;color:#eef1f5">{{ r.viewersFmt }}</div>
+                      <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5f6875">{{ r.bitrate }} Mbps</div>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+
+              <!-- alert -->
+              <div style="background:rgba(255,122,69,.08);border:1px solid rgba(255,122,69,.3);border-radius:10px;padding:12px 13px">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 13H3z" stroke="#ff9d6b" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v3.5" stroke="#ff9d6b" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.6" r="0.9" fill="#ff9d6b"/></svg>
+                  <span style="font-family:'Space Mono',monospace;font-size:10px;color:#ff9d6b;font-weight:700;letter-spacing:.04em">SIGNAL ALERT</span>
+                </div>
+                <div style="font-size:12.5px;line-height:1.45;color:#d4b3a0">Liverpool v Chelsea — ingest bitrate dropped to <b style="color:#ffb89a">4.1 Mbps</b>. Failover source recommended.</div>
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <span style="font-size:11px;font-weight:600;background:#ff7a45;color:#1a0d06;padding:5px 10px;border-radius:6px;cursor:pointer">Switch source</span>
+                  <span style="font-size:11px;color:#9a8a80;padding:5px 6px;cursor:pointer">Dismiss</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DIRECTION B — STUDIO (light) -->
+    <!-- ============================================================ -->
+    <div style="flex:none;width:1180px">
+      <div style="font-family:'Space Mono',monospace;font-size:12px;color:#6f6c62;margin-bottom:10px;letter-spacing:.04em">B · STUDIO</div>
+      <div data-screen-label="Studio" style="border-radius:3px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.14);background:#f4f3ef;color:#1a1d21">
+        <!-- topnav -->
+        <div style="height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:#fff;border-bottom:1px solid #e6e3db">
+          <div style="display:flex;align-items:center;gap:28px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#13241a;display:flex;align-items:center;justify-content:center;position:relative">
+                <div style="width:14px;height:14px;border:1.5px solid #1f9d57;border-radius:50%"></div>
+                <div style="position:absolute;width:1.5px;height:15px;background:#1f9d57"></div>
+              </div>
+              <span style="font-weight:800;font-size:16px;letter-spacing:-.02em">Touchline</span>
+            </div>
+            <div style="display:flex;gap:22px;font-size:14px">
+              <span style="font-weight:600;color:#13241a;border-bottom:2px solid #1f9d57;padding:20px 0">Events</span>
+              <span style="color:#6b7280;padding:20px 0">Schedule</span>
+              <span style="color:#6b7280;padding:20px 0">Sources</span>
+              <span style="color:#6b7280;padding:20px 0">Analytics</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="font-family:'Space Mono',monospace;font-size:13px;color:#1a1d21;font-weight:700">{{ clock }}</div>
+            <button style="display:flex;align-items:center;gap:7px;background:#13241a;color:#fff;border:none;font-weight:600;font-size:13px;padding:9px 15px;border-radius:9px;cursor:pointer" style-hover="background:#1f9d57">
+              <span style="font-size:16px;line-height:0;margin-top:-1px">+</span> New event
+            </button>
+          </div>
+        </div>
+
+        <div style="padding:26px">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px">
+            <div>
+              <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Today's matches</div>
+              <div style="font-size:13px;color:#6b7280;margin-top:3px">{{ totalEvents }} events · {{ totalViewersFmt }} watching now</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <span style="font-size:13px;font-weight:600;background:#13241a;color:#fff;padding:8px 14px;border-radius:8px">All</span>
+              <span style="font-size:13px;color:#4b5563;background:#fff;border:1px solid #e6e3db;padding:8px 14px;border-radius:8px">On air</span>
+              <span style="font-size:13px;color:#4b5563;background:#fff;border:1px solid #e6e3db;padding:8px 14px;border-radius:8px">Scheduled</span>
+              <span style="font-size:13px;color:#4b5563;background:#fff;border:1px solid #e6e3db;padding:8px 14px;border-radius:8px">Ended</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+              <div style="background:#fff;border:1px solid #e6e3db;border-radius:14px;overflow:hidden" style-hover="box-shadow:0 6px 20px rgba(0,0,0,.07)">
+                <div style="padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0eee8">
+                  <span style="{{ r.chipLight }}"><span style="{{ r.dotStyle }}"></span>{{ r.label }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:13px;color:#1a1d21;font-weight:700">{{ r.kickoff }}</span>
+                </div>
+                <div style="padding:20px 15px;display:flex;align-items:center;justify-content:center;gap:16px">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:7px;width:78px">
+                    <div style="{{ r.crestHomeLg }}">{{ r.ha }}</div>
+                    <span style="font-size:12px;font-weight:600;text-align:center;line-height:1.2">{{ r.home }}</span>
+                  </div>
+                  <span style="font-family:'Space Mono',monospace;font-size:13px;color:#9ca3af">VS</span>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:7px;width:78px">
+                    <div style="{{ r.crestAwayLg }}">{{ r.aa }}</div>
+                    <span style="font-size:12px;font-weight:600;text-align:center;line-height:1.2">{{ r.away }}</span>
+                  </div>
+                </div>
+                <div style="padding:12px 15px;display:flex;align-items:center;justify-content:space-between;background:#faf9f6;border-top:1px solid #f0eee8">
+                  <span style="font-size:12px;color:#6b7280">{{ r.comp }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:13px;{{ r.viewersTxtLight }}">{{ r.viewersFmtCard }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DIRECTION C — MATCHDAY (bold rundown) -->
+    <!-- ============================================================ -->
+    <div style="flex:none;width:1180px">
+      <div style="font-family:'Space Mono',monospace;font-size:12px;color:#6f6c62;margin-bottom:10px;letter-spacing:.04em">C · MATCHDAY</div>
+      <div data-screen-label="Matchday" style="border-radius:3px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.22);background:#0b0d12;color:#eef1f5">
+        <div style="height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid #1a1f29">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="font-weight:900;font-size:18px;letter-spacing:-.03em;color:#fff">TOUCHLINE</div>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:#0b0d12;background:#c6f04e;padding:3px 8px;border-radius:4px;font-weight:700">MATCHDAY</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <span style="font-family:'Space Mono',monospace;font-size:13px;color:#c6f04e;font-weight:700">{{ clock }}</span>
+            <button style="background:#c6f04e;color:#0b0d12;border:none;font-weight:800;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer" style-hover="background:#d4ff63">+ NEW EVENT</button>
+          </div>
+        </div>
+
+        <div style="padding:28px">
+          <!-- hero now live -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <span style="width:9px;height:9px;border-radius:50%;background:#ff5a5f;animation:tlPulse 1.4s infinite"></span>
+            <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.1em;color:#ff8a8d;font-weight:700">NOW LIVE</span>
+          </div>
+          <div style="background:linear-gradient(135deg,#13311f,#0e1a14);border:1px solid #1f4a30;border-radius:18px;padding:30px;display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;position:relative;overflow:hidden">
+            <div style="position:absolute;right:-40px;top:-40px;width:220px;height:220px;border:2px solid rgba(198,240,78,.12);border-radius:50%"></div>
+            <div style="display:flex;align-items:center;gap:26px">
+              <div style="{{ heroHomeCrest }}">{{ heroHa }}</div>
+              <div style="text-align:center">
+                <div style="font-family:'Space Mono',monospace;font-size:11px;color:#8fb89c;letter-spacing:.1em">{{ heroComp }}</div>
+                <div style="font-size:34px;font-weight:900;letter-spacing:-.02em;margin:4px 0;white-space:nowrap">{{ heroHome }} <span style="color:#5f7a68">v</span> {{ heroAway }}</div>
+                <div style="font-family:'Space Mono',monospace;font-size:12px;color:#8fb89c">KO {{ heroKickoff }} · {{ heroRegion }}</div>
+              </div>
+              <div style="{{ heroAway2 }}">{{ heroAa }}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:'Space Mono',monospace;font-size:42px;font-weight:700;color:#c6f04e;line-height:1">{{ heroViewers }}</div>
+              <div style="font-size:12px;color:#8fb89c;margin-top:4px">watching live</div>
+              <div style="display:flex;align-items:flex-end;gap:3px;height:26px;justify-content:flex-end;margin-top:12px">
+                <span style="width:4px;background:#c6f04e;height:100%;transform-origin:bottom;animation:tlBars 1s infinite"></span>
+                <span style="width:4px;background:#c6f04e;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .15s"></span>
+                <span style="width:4px;background:#c6f04e;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .3s"></span>
+                <span style="width:4px;background:#c6f04e;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .45s"></span>
+                <span style="width:4px;background:#c6f04e;height:100%;transform-origin:bottom;animation:tlBars 1s infinite .25s"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- rundown -->
+          <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;color:#7a8493;margin-bottom:14px">TODAY'S RUNDOWN</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="7">
+              <div style="display:flex;align-items:center;gap:18px;padding:14px 16px;border-radius:10px;background:#11151d" style-hover="background:#161c26">
+                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#eef1f5;width:64px">{{ r.kickoff }}</div>
+                <div style="width:3px;height:34px;border-radius:2px;{{ r.railBar }}"></div>
+                <div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0">
+                  <div style="{{ r.crestHome }}">{{ r.ha }}</div>
+                  <div style="{{ r.crestAway }}">{{ r.aa }}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:15px;font-weight:700;white-space:nowrap">{{ r.home }} <span style="color:#5f6875;font-weight:400">v</span> {{ r.away }}</div>
+                    <div style="font-size:11px;color:#7a8493">{{ r.comp }}</div>
+                  </div>
+                </div>
+                <span style="{{ r.chipBold }}"><span style="{{ r.dotStyle }}"></span>{{ r.label }}</span>
+                <div style="font-family:'Space Mono',monospace;font-size:15px;width:96px;text-align:right;{{ r.viewersTxt }}">{{ r.viewersFmt }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== CREATE EVENT MODAL (interactive, Direction A) ===== -->
+  <sc-if value="{{ showCreate }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCreate }}" style="position:fixed;inset:0;background:rgba(6,8,11,.66);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;font-family:'Archivo',sans-serif">
+      <div onClick="{{ stop }}" style="width:560px;background:#11151b;border:1px solid #2a333f;border-radius:16px;color:#e6e9ee;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:tlFade .25s ease;overflow:hidden">
+        <div style="padding:22px 24px;border-bottom:1px solid #232b35;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:18px;font-weight:800;letter-spacing:-.01em">New streaming event</div>
+            <div style="font-size:12px;color:#7a8493;margin-top:2px">Set the match details to schedule a broadcast</div>
+          </div>
+          <div onClick="{{ closeCreate }}" style="cursor:pointer;color:#7a8493;font-size:22px;line-height:1" style-hover="color:#fff">×</div>
+        </div>
+
+        <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">COMPETITION</label>
+            <select value="{{ form.comp }}" onChange="{{ onComp }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px;cursor:pointer">
+              <option value="">Select competition…</option>
+              <option value="Premier League">Premier League</option>
+              <option value="LaLiga">LaLiga</option>
+              <option value="Serie A">Serie A</option>
+              <option value="Bundesliga">Bundesliga</option>
+              <option value="Ligue 1">Ligue 1</option>
+              <option value="Champions League">Champions League</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end">
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">HOME TEAM</label>
+              <input value="{{ form.home }}" onInput="{{ onHome }}" placeholder="e.g. Tottenham" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px" style-focus="border-color:#58e08a;outline:none"/>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:13px;color:#5f6875;padding-bottom:12px">v</div>
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">AWAY TEAM</label>
+              <input value="{{ form.away }}" onInput="{{ onAway }}" placeholder="e.g. Newcastle" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px" style-focus="border-color:#58e08a;outline:none"/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">KICKOFF DATE</label>
+              <input type="date" value="{{ form.date }}" onInput="{{ onDate }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:10px 13px;color:#e6e9ee;font-size:14px;color-scheme:dark"/>
+            </div>
+            <div>
+              <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">KICKOFF TIME</label>
+              <input type="time" value="{{ form.time }}" onInput="{{ onTime }}" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:10px 13px;color:#e6e9ee;font-size:14px;color-scheme:dark"/>
+            </div>
+          </div>
+          <div>
+            <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;color:#7a8493;margin-bottom:7px">STREAM SOURCE (INGEST URL) <span style="color:#4a525e">· optional</span></label>
+            <input value="{{ form.source }}" onInput="{{ onSource }}" placeholder="srt://ingest.touchline.tv:9000" style="width:100%;background:#0d1117;border:1px solid #2a333f;border-radius:9px;padding:11px 13px;color:#e6e9ee;font-size:14px;font-family:'Space Mono',monospace" style-focus="border-color:#58e08a;outline:none"/>
+          </div>
+        </div>
+
+        <div style="padding:18px 24px;border-top:1px solid #232b35;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;color:#5f6875">{{ formHint }}</div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ closeCreate }}" style="background:transparent;border:1px solid #2a333f;color:#aab2bf;font-size:13px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer" style-hover="border-color:#3a4452">Cancel</button>
+            <button onClick="{{ submitCreate }}" style="{{ submitStyle }}">Create event</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- toast -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#58e08a;color:#06140c;padding:13px 20px;border-radius:10px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:60;animation:tlFade .3s ease;font-family:'Archivo',sans-serif">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    now: new Date(),
+    showCreate: false,
+    form: { comp:'', home:'', away:'', date:'', time:'', source:'' },
+    toast: null,
+    events: [
+      {id:'EV-2041', status:'live', home:'Man City', hc:'#6CABDD', htc:'#0b1f33', ha:'MCI', away:'Arsenal', ac:'#EF0107', atc:'#fff', aa:'ARS', comp:'Premier League', kickoff:'20:45', viewers:412380, bitrate:'12.4', health:98, region:'UK · Global'},
+      {id:'EV-2042', status:'live', home:'Real Madrid', hc:'#FEBE10', htc:'#1a1a1a', ha:'RMA', away:'Sevilla', ac:'#D00027', atc:'#fff', aa:'SEV', comp:'LaLiga', kickoff:'21:00', viewers:388120, bitrate:'11.8', health:95, region:'ES · LATAM'},
+      {id:'EV-2043', status:'issue', home:'Liverpool', hc:'#C8102E', htc:'#fff', ha:'LIV', away:'Chelsea', ac:'#034694', atc:'#fff', aa:'CHE', comp:'Premier League', kickoff:'20:00', viewers:201540, bitrate:'4.1', health:42, region:'UK · Global'},
+      {id:'EV-2044', status:'encoding', home:'Inter', hc:'#0068A8', htc:'#fff', ha:'INT', away:'Juventus', ac:'#111111', atc:'#fff', aa:'JUV', comp:'Serie A', kickoff:'20:45', viewers:0, bitrate:'—', health:80, region:'IT'},
+      {id:'EV-2045', status:'scheduled', home:'PSG', hc:'#004170', htc:'#fff', ha:'PSG', away:'Marseille', ac:'#2FAEE0', atc:'#0b1f33', aa:'OM', comp:'Ligue 1', kickoff:'21:00', viewers:0, bitrate:'—', health:100, region:'FR'},
+      {id:'EV-2046', status:'scheduled', home:'Bayern', hc:'#DC052D', htc:'#fff', ha:'FCB', away:'Dortmund', ac:'#FDE100', atc:'#1a1a1a', aa:'BVB', comp:'Bundesliga', kickoff:'18:30', viewers:0, bitrate:'—', health:100, region:'DE'},
+      {id:'EV-2047', status:'scheduled', home:'Napoli', hc:'#12A0D7', htc:'#fff', ha:'NAP', away:'Roma', ac:'#8E1F2F', atc:'#fff', aa:'ROM', comp:'Serie A', kickoff:'19:45', viewers:0, bitrate:'—', health:100, region:'IT'},
+      {id:'EV-2040', status:'ended', home:'Barcelona', hc:'#A50044', htc:'#fff', ha:'BAR', away:'Atlético', ac:'#CB3524', atc:'#fff', aa:'ATM', comp:'LaLiga', kickoff:'FT', viewers:0, bitrate:'—', health:100, region:'ES'},
+    ],
+  };
+
+  META = {
+    live:     {label:'ON AIR',       color:'#ff5a5f', dchipBg:'rgba(255,90,95,.15)',  dfg:'#ff8a8d', lchipBg:'rgba(229,45,45,.10)',  lfg:'#d92d2d'},
+    scheduled:{label:'SCHEDULED',    color:'#4aa3ff', dchipBg:'rgba(74,163,255,.13)', dfg:'#86c2ff', lchipBg:'rgba(37,99,235,.09)',  lfg:'#2563eb'},
+    encoding: {label:'STANDBY',      color:'#f0b429', dchipBg:'rgba(240,180,41,.15)', dfg:'#f5cf6a', lchipBg:'rgba(176,124,10,.11)', lfg:'#b07c0a'},
+    issue:    {label:'SIGNAL ISSUE', color:'#ff7a45', dchipBg:'rgba(255,122,69,.17)', dfg:'#ffa173', lchipBg:'rgba(210,84,30,.10)',  lfg:'#d2541e'},
+    ended:    {label:'ENDED',        color:'#8b94a3', dchipBg:'rgba(139,148,163,.14)',dfg:'#aab2bf', lchipBg:'rgba(107,114,128,.09)',lfg:'#6b7280'},
+  };
+
+  componentDidMount(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    this.setState({ form: { ...this.state.form, date: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time: '20:45' } });
+    this._t = setInterval(() => {
+      this.setState(s => ({
+        now: new Date(),
+        events: s.events.map(e => {
+          if (e.status === 'live') {
+            const delta = Math.round((Math.random() - 0.42) * 1800);
+            return { ...e, viewers: Math.max(80000, e.viewers + delta) };
+          }
+          if (e.status === 'issue') {
+            const delta = Math.round((Math.random() - 0.55) * 2200);
+            return { ...e, viewers: Math.max(40000, e.viewers + delta) };
+          }
+          return e;
+        }),
+      }));
+    }, 1400);
+  }
+  componentWillUnmount(){ clearInterval(this._t); if(this._toastT) clearTimeout(this._toastT); }
+
+  fmt(n){ return n >= 1000 ? n.toLocaleString('en-US') : String(n); }
+
+  crest(bg, fg, size){
+    const s = size || 30;
+    return `width:${s}px;height:${s}px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:${s>40?13:10}px;background:${bg};color:${fg};border:1px solid rgba(255,255,255,.12)`;
+  }
+
+  chip(bg, fg){
+    return `display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.03em;padding:4px 9px;border-radius:6px;background:${bg};color:${fg};white-space:nowrap`;
+  }
+
+  buildRow(e){
+    const m = this.META[e.status];
+    const dot = `width:6px;height:6px;border-radius:50%;flex:none;background:${m.color}` + (e.status==='live'?';animation:tlPulse 1.4s infinite':'');
+    const healthColor = e.health >= 80 ? '#46d18a' : e.health >= 55 ? '#f0b429' : '#ff5a5f';
+    const isData = e.status==='live' || e.status==='issue';
+    const railColor = e.status==='live' ? '#ff5a5f' : e.status==='issue' ? '#ff7a45' : e.status==='scheduled' ? '#4aa3ff' : e.status==='encoding' ? '#f0b429' : '#3a4452';
+    return {
+      ...e,
+      label: m.label,
+      dotStyle: dot,
+      chipDark: this.chip(m.dchipBg, m.dfg),
+      chipLight: this.chip(m.lchipBg, m.lfg),
+      chipBold: this.chip(m.dchipBg, m.dfg),
+      crestHome: this.crest(e.hc, e.htc, 30),
+      crestAway: this.crest(e.ac, e.atc, 30),
+      crestHomeLg: this.crest(e.hc, e.htc, 50),
+      crestAwayLg: this.crest(e.ac, e.atc, 50),
+      healthBar: `height:100%;border-radius:3px;width:${e.health}%;background:${healthColor}`,
+      healthLabel: e.status==='ended' ? '—' : e.health + '%',
+      healthTxt: `color:${e.status==='ended'?'#5f6875':healthColor}`,
+      railBar: `background:${railColor}`,
+      viewersFmt: isData ? this.fmt(e.viewers) : (e.status==='scheduled'?'—':e.status==='encoding'?'standby':'ended'),
+      viewersFmtCard: isData ? this.fmt(e.viewers) + ' live' : (e.status==='scheduled'?'Scheduled':e.status==='encoding'?'Standby':'Final'),
+      viewersTxt: `color:${isData?'#eef1f5':'#5f6875'};font-weight:${isData?'700':'400'}`,
+      viewersTxtLight: `color:${isData?'#13241a':'#9ca3af'};font-weight:${isData?'700':'400'}`,
+    };
+  }
+
+  renderVals(){
+    const d = this.state.now;
+    const pad = n => String(n).padStart(2,'0');
+    const clock = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const dateStr = d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
+
+    const rows = this.state.events.map(e => this.buildRow(e));
+    const liveRows = rows.filter(r => r.status === 'live');
+    const totalViewers = this.state.events.filter(e=>e.status==='live'||e.status==='issue').reduce((a,e)=>a+e.viewers,0);
+    const hero = liveRows[0];
+
+    const f = this.state.form;
+    const canSubmit = f.comp && f.home.trim() && f.away.trim() && f.time;
+    const submitStyle = canSubmit
+      ? "background:#58e08a;color:#06140c;border:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:9px;cursor:pointer"
+      : "background:#1c2530;color:#5f6875;border:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:9px;cursor:not-allowed";
+
+    return {
+      clock, dateStr, rows, liveRows,
+      liveCount: liveRows.length,
+      standbyCount: this.state.events.filter(e=>e.status==='encoding').length,
+      scheduledCount: this.state.events.filter(e=>e.status==='scheduled').length,
+      totalEvents: this.state.events.length,
+      totalViewersFmt: this.fmt(totalViewers),
+      heroHome: hero?hero.home:'', heroAway: hero?hero.away:'',
+      heroHomeCrest: hero?hero.crestHomeLg:'', heroAway2: hero?hero.crestAwayLg:'',
+      heroHa: hero?hero.ha:'', heroAa: hero?hero.aa:'',
+      heroComp: hero?hero.comp:'', heroKickoff: hero?hero.kickoff:'',
+      heroRegion: hero?hero.region:'', heroViewers: hero?this.fmt(hero.viewers):'',
+      showCreate: this.state.showCreate,
+      form: this.state.form,
+      formHint: canSubmit ? 'Ready to schedule' : 'Competition, teams & kickoff time required',
+      submitStyle,
+      toast: this.state.toast,
+      onComp: e => this.setState({ form: { ...this.state.form, comp: e.target.value } }),
+      onHome: e => this.setState({ form: { ...this.state.form, home: e.target.value } }),
+      onAway: e => this.setState({ form: { ...this.state.form, away: e.target.value } }),
+      onDate: e => this.setState({ form: { ...this.state.form, date: e.target.value } }),
+      onTime: e => this.setState({ form: { ...this.state.form, time: e.target.value } }),
+      onSource: e => this.setState({ form: { ...this.state.form, source: e.target.value } }),
+      openCreate: () => this.setState({ showCreate: true }),
+      closeCreate: () => this.setState({ showCreate: false }),
+      stop: e => e.stopPropagation(),
+      submitCreate: () => {
+        const f = this.state.form;
+        if (!(f.comp && f.home.trim() && f.away.trim() && f.time)) return;
+        const ab = s => s.trim().replace(/[^a-zA-Z]/g,'').slice(0,3).toUpperCase() || 'TBD';
+        const id = 'EV-' + (2048 + Math.floor(Math.random()*900));
+        const ne = { id, status:'scheduled', home:f.home.trim(), hc:'#3a4452', htc:'#fff', ha:ab(f.home),
+          away:f.away.trim(), ac:'#2a333f', atc:'#fff', aa:ab(f.away), comp:f.comp, kickoff:f.time, viewers:0, bitrate:'—', health:100, region:'New' };
+        this.setState({
+          events: [ne, ...this.state.events],
+          showCreate: false,
+          form: { comp:'', home:'', away:'', date:f.date, time:'20:45', source:'' },
+          toast: `Event created — ${ne.home} v ${ne.away}`,
+        });
+        if (this._toastT) clearTimeout(this._toastT);
+        this._toastT = setTimeout(() => this.setState({ toast: null }), 2800);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
